@@ -1,5 +1,5 @@
-'''# coding: utf-8
-import sys, os
+#-*- coding: utf-8 -*-
+'''# import sys, os
 sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,39 +20,39 @@ learning_rate = 0.01
 
 
 def __train(weight_init_std):
-    bn_network = MultiLayerNetExtend(input_size=784, hidden_size_list=[100, 100, 100, 100, 100], output_size=10, 
+    bn_network = MultiLayerNetExtend(input_size=784, hidden_size_list=[100, 100, 100, 100, 100], output_size=10,
                                     weight_init_std=weight_init_std, use_batchnorm=True)
     network = MultiLayerNetExtend(input_size=784, hidden_size_list=[100, 100, 100, 100, 100], output_size=10,
                                 weight_init_std=weight_init_std)
     optimizer = SGD(lr=learning_rate)
-    
+
     train_acc_list = []
     bn_train_acc_list = []
-    
+
     iter_per_epoch = max(train_size / batch_size, 1)
     epoch_cnt = 0
-    
+
     for i in range(1000000000):
         batch_mask = np.random.choice(train_size, batch_size)
         x_batch = x_train[batch_mask]
         t_batch = t_train[batch_mask]
-    
+
         for _network in (bn_network, network):
             grads = _network.gradient(x_batch, t_batch)
             optimizer.update(_network.params, grads)
-    
+
         if i % iter_per_epoch == 0:
             train_acc = network.accuracy(x_train, t_train)
             bn_train_acc = bn_network.accuracy(x_train, t_train)
             train_acc_list.append(train_acc)
             bn_train_acc_list.append(bn_train_acc)
-    
+
             print("epoch:" + str(epoch_cnt) + " | " + str(train_acc) + " - " + str(bn_train_acc))
-    
+
             epoch_cnt += 1
             if epoch_cnt >= max_epochs:
                 break
-                
+
     return train_acc_list, bn_train_acc_list
 
 
@@ -63,7 +63,7 @@ x = np.arange(max_epochs)
 for i, w in enumerate(weight_scale_list):
     print( "============== " + str(i+1) + "/16" + " ==============")
     train_acc_list, bn_train_acc_list = __train(w)
-    
+
     plt.subplot(4,4,i+1)
     plt.title("W:" + str(w))
     if i == 15:
@@ -83,7 +83,7 @@ for i, w in enumerate(weight_scale_list):
     else:
         plt.xlabel("epochs")
     plt.legend(loc='lower right')
-    
+
 plt.show()'''
 
 
@@ -595,16 +595,16 @@ from common.trainer import Trainer
 # データの読み込み
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
 
-# 処理に時間のかかる場合はデータを削減 
+# 処理に時間のかかる場合はデータを削減
 #x_train, t_train = x_train[:5000], t_train[:5000]
 #x_test, t_test = x_test[:1000], t_test[:1000]
 
 max_epochs = 20
 
-network = SimpleConvNet(input_dim=(1,28,28), 
+network = SimpleConvNet(input_dim=(1,28,28),
                         conv_param = {'filter_num': 30, 'filter_size': 5, 'pad': 0, 'stride': 1},
                         hidden_size=100, output_size=10, weight_init_std=0.01)
-                        
+
 trainer = Trainer(network, x_train, t_train, x_test, t_test,
                   epochs=max_epochs, mini_batch_size=100,
                   optimizer='Adam', optimizer_param={'lr': 0.001},
@@ -659,7 +659,7 @@ class DeepConvNet:
         # 各層のニューロンひとつあたりが、前層のニューロンといくつのつながりがあるか（TODO:自動で計算する）
         pre_node_nums = np.array([1*3*3, 16*3*3, 16*3*3, 32*3*3, 32*3*3, 64*3*3, 64*4*4, hidden_size])
         weight_init_scales = np.sqrt(2.0 / pre_node_nums)  # ReLUを使う場合に推奨される初期値
-        
+
         self.params = {}
         pre_channel_num = input_dim[0]
         for idx, conv_param in enumerate([conv_param_1, conv_param_2, conv_param_3, conv_param_4, conv_param_5, conv_param_6]):
@@ -673,14 +673,14 @@ class DeepConvNet:
 
         # レイヤの生成===========
         self.layers = []
-        self.layers.append(Convolution(self.params['W1'], self.params['b1'], 
+        self.layers.append(Convolution(self.params['W1'], self.params['b1'],
                            conv_param_1['stride'], conv_param_1['pad']))
         self.layers.append(Relu())
-        self.layers.append(Convolution(self.params['W2'], self.params['b2'], 
+        self.layers.append(Convolution(self.params['W2'], self.params['b2'],
                            conv_param_2['stride'], conv_param_2['pad']))
         self.layers.append(Relu())
         self.layers.append(Pooling(pool_h=2, pool_w=2, stride=2))
-        self.layers.append(Convolution(self.params['W3'], self.params['b3'], 
+        self.layers.append(Convolution(self.params['W3'], self.params['b3'],
                            conv_param_3['stride'], conv_param_3['pad']))
         self.layers.append(Relu())
         self.layers.append(Convolution(self.params['W4'], self.params['b4'],
@@ -699,7 +699,7 @@ class DeepConvNet:
         self.layers.append(Dropout(0.5))
         self.layers.append(Affine(self.params['W8'], self.params['b8']))
         self.layers.append(Dropout(0.5))
-        
+
         self.last_layer = SoftmaxWithLoss()
 
     def predict(self, x, train_flg=False):
@@ -779,7 +779,7 @@ from common.trainer import Trainer
 
 (x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
 
-network = DeepConvNet()  
+network = DeepConvNet()
 trainer = Trainer(network, x_train, t_train, x_test, t_test,
                   epochs=20, mini_batch_size=100,
                   optimizer='Adam', optimizer_param={'lr':0.001},
