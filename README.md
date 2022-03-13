@@ -1,3 +1,6 @@
+（2021.06~)下記参考書を利用し勉強
+
+-----------------------------------
 ゼロから作る Deep Learning
 ==========================
 
@@ -55,4 +58,3 @@ $ python train_nueralnet.py
 https://github.com/oreilly-japan/deep-learning-from-scratch/wiki/errata
 
 本ページに掲載されていない誤植など間違いを見つけた方は、[japan@oreilly.co.jp](<mailto:japan@oreilly.co.jp>)までお知らせください。
-
